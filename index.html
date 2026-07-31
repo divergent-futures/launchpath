@@ -212,7 +212,8 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
 <!-- ================= SCORE ================= -->
 <div class="wrap tabpane" id="pane-score">
 <h1>Campaign Readiness Score</h1>
-<p class="sub">Answer these before you hit publish. The score checks your Kickstarter against the seven things the data says actually move funding &#8212; and tells you what to fix first. Honest estimate, not a guarantee.</p>
+<p class="sub">Answer these before you hit publish. The score checks your Kickstarter against the things the data says actually move funding &#8212; and tells you what to fix first. Honest estimate, not a guarantee.</p>
+<p class="trust" style="border-color:#d98324"><b>Scoring model updated 31 July 2026.</b> We re-fitted the weights against 57,982 recent campaigns, comparing only campaigns within the same subcategory. Three things changed. Two new questions were added &#8212; how long you prepared before launching, and how many days your campaign runs &#8212; because together they carry more of the measurable signal than anything except goal size, and neither was being asked about. Video&#8217;s weight was halved, because its advantage has fallen from +21.6 points to +5.4 since 2019. And the reward-tier question no longer has campaign length bundled into it. The scale is still out of 100 and the verdict bands are unchanged, so scores stay comparable &#8212; but a campaign that was strong except for launching in a hurry will score lower than it did before, on purpose.</p>
 <p class="trust">&#128274; Nothing you type leaves your device. This page never talks to a server &#8212; open your browser's network tab if you want to verify.</p>
 
 <div class="grid">
@@ -226,6 +227,7 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
         stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"/>
     </svg><div class="ringnum"><div class="n" id="scoreN">0</div><div class="of">/ 100 ready</div></div></div>
     <div class="verdict" id="verdict">&#8212;</div><div class="vsub" id="vsub">Fill in your campaign to see your score.</div>
+    <div id="holdbanner" style="display:none;margin-top:11px;border:1px solid #d98324;border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.5;background:rgba(217,131,36,.09)"></div>
     <div class="odds"><div class="lab">Estimated chance of funding</div>
       <div class="val" id="oddsV">&#8212;</div><div class="cmp" id="oddsC">vs. ~40% platform average</div></div>
     <div class="reassure"><span class="rlead">Say it with us:</span><span class="rtag">No idea is a bad idea.</span>
@@ -304,36 +306,43 @@ const F = [
  {id:"proto",q:"Do you have a real, working prototype?",hint:"Kickstarter bans renders/CGI for a reason — backers fund things that exist.",max:10,
   options:[["Yes, it works",10,""],["Sort of / rough",5,"Get one working demo unit built — even ugly beats a render."],
   ["Just renders",0,"Kickstarter requires a working prototype for hardware. Build one before launch."]]},
- {id:"video",q:"Do you have a video showing it in action?",hint:"54% of projects with video get funded vs 39% without.",max:8,
-  options:[["Yes, shows it working",8,""],["Basic video",4,"Re-cut so a live demo is in the first 30 seconds."],
-  ["No video",0,"Add a video — it's the biggest single jump in funding odds (54% vs 39%)."]]},
- {id:"list",q:"Have you built a pre-launch audience?",hint:"The move most first-timers skip. Reservation-holders convert 20–50% vs 3–5% cold.",max:18,
-  options:[["List + $1 reservations",18,""],["Email list only",10,"Convert the list into $1 reservations so you can fund on day one."],
-  ["Some social following",5,"Start collecting emails now and take $1 reservations before launch."],
+ {id:"video",q:"Do you have a video showing it in action?",hint:"Worth far less than it used to be. Across 189,498 campaigns the video advantage fell from +21.6 points (2015–19) to +5.4 points (2023–26) — most campaigns have one now, so it marks absence more than presence.",max:4,
+  options:[["Yes, shows it working",4,""],["Basic video",2,"Re-cut so a live demo is in the first 30 seconds — but don't spend your whole runway here."],
+  ["No video",0,"Add a video, but keep it cheap. It's worth about +5 points now, not the +22 it was worth a decade ago."]]},
+ {id:"list",q:"Have you built a pre-launch audience?",hint:"Creators who ran a pre-launch page funded at much higher rates — ahead in 125 of 129 matched subcategory-and-goal cells. That mostly reflects that they did the other work too: it's a signal of preparation, not a guarantee.",max:9,
+  options:[["List + $1 reservations",9,""],["Email list only",5,"Convert the list into $1 reservations so you can fund on day one."],
+  ["Some social following",2,"Start collecting emails now and take $1 reservations before launch."],
   ["Nothing yet",0,"Build a pre-launch list + $1 reservations — this funds you on day one and trips Kickstarter's discovery algorithm."]]},
+ {id:"prep",q:"How long between creating your project page and launching it?",hint:"The cheapest lever there is — it costs nothing but patience. At $25k+ goals, campaigns launched within three days funded at 8–11%; those prepared two months or more funded at 64–69%.",max:10,
+  options:[["Two months or more",10,""],["Two weeks to two months",8,"Another few weeks of preparation is the cheapest improvement available to you."],
+  ["Three to fourteen days",5,"Slow down. The gap between a fortnight and two months is one of the largest in the data."],
+  ["Under three days",0,"Don't launch this week. Campaigns launched within three days of being created fund at a fraction of the rate of prepared ones, and waiting costs you nothing."]]},
  {id:"mfg",q:"Have you costed manufacturing for real?",hint:"Hardware costs — including shipping, packaging & duties — routinely run several times over naive guesses.",max:12,
   options:[["Real quote + padded",12,""],["Rough estimate",6,"Get a real bill-of-materials and quote (with shipping, packaging & duties), then pad it."],
   ["Guessed it",0,"Get a real manufacturing quote BEFORE setting your price and goal — underpricing kills delivery."],
   ["Digital / no manufacturing",12,""]]},
- {id:"time",q:"Is your delivery date conservative?",hint:"Most hardware projects ship late. Under-promise.",max:8,
-  options:[["Padded / conservative",8,""],["Realistic",5,"Add buffer — most projects ship late; a missed date burns trust."],
+ {id:"time",q:"Is your delivery date conservative?",hint:"Most hardware projects ship late. Under-promise.",max:6,
+  options:[["Padded / conservative",6,""],["Realistic",4,"Add buffer — most projects ship late; a missed date burns trust."],
   ["Optimistic",2,"Push your date out. Late delivery is the #1 way campaigns lose backer trust."],
   ["No date yet",0,"Set an honest, padded delivery date."]]},
  {id:"risk",q:"Written an honest Risks & Challenges section?",hint:"Mandatory since 2012 — and a signal you're prepared.",max:6,
   options:[["Yes, specific",6,""],["Generic",3,"Make it specific: your real risks, your plan, your relevant experience."],
   ["Not yet",0,"Write a real Risks & Challenges section — backers trust creators who see the risks clearly."]]},
- {id:"simple",q:"Is the campaign simple? (≤7 reward tiers, ~30-day run)",hint:"Simpler projects both fund and ship better; 64% of winners run ≤30 days.",max:8,
-  options:[["Yes, tight & simple",8,""],["A bit much",4,"Cut reward tiers and shorten to ~30 days — choice overload lowers pledges."],
-  ["Many tiers / long run",0,"Trim to a handful of tiers and ~30 days."]]},
+ {id:"dur",q:"How many days will your campaign run?",hint:"Kickstarter defaults to 30 days and 43% of creators take it. Shorter beat the default in sixteen matched cells out of sixteen. Part of this runs the other way — a creator who picks 60 days often already suspects they'll need it — but a long campaign will not rescue a weak one.",max:11,
+  options:[["Under 30 days",11,""],["30 to 45 days",6,"Shorten it. Under-30-day campaigns beat the 30-day default in every matched cell tested."],
+  ["More than 45 days",0,"Cut it to under 30 days. Campaigns running 45+ days had the worst outcomes in every goal band."]]},
+ {id:"simple",q:"Is the reward structure simple? (≤7 tiers)",hint:"Choice overload lowers pledges. A handful of clear tiers outperforms a wall of options.",max:4,
+  options:[["Yes, tight & simple",4,""],["A bit much",2,"Cut reward tiers — choice overload lowers pledges."],
+  ["Many tiers",0,"Trim to a handful of tiers."]]},
  {id:"net",q:"Have you tested the idea with real people and lined up early backers?",hint:"Real feedback + people ready to pledge on day one is one of the strongest predictors of success.",max:10,
   options:[["Tested + backers ready",10,""],["Some feedback",5,"Get your idea in front of real people (an event, a community) and collect who'd back it."],
   ["Not yet",0,"Test the idea with real people and gather early backers — day-one pledges are what make a launch take off."]]},
 ];
 const GOALBASE=[[1000,55],[5000,47],[10000,40],[25000,34],[50000,25],[100000,17],[1e12,8]];
-const GOALPTS =[[1000,20],[5000,18],[10000,13],[25000,8],[50000,4],[100000,2],[1e12,0]];
+const GOALPTS =[[1000,18],[5000,16],[10000,12],[25000,7],[50000,4],[100000,2],[1e12,0]];
 function band(v,t){for(const [c,x] of t){if(v<=c)return x;}return t[t.length-1][1];}
 
-const state={catName:null,sub:null,desc:"",goal:null,proto:null,video:null,list:null,mfg:null,time:null,risk:null,simple:null,net:null};
+const state={catName:null,sub:null,desc:"",goal:null,proto:null,video:null,list:null,prep:null,mfg:null,time:null,risk:null,dur:null,simple:null,net:null};
 function effRate(){if(state.sub&&state.sub.r!=null)return state.sub.r;const c=SUBDATA[state.catName];return c?c.catR:null;}
 function catMod(){const r=effRate();return r==null?0:Math.max(-18,Math.min(18,(r-40.4)*0.6));}
 
@@ -432,7 +441,25 @@ function render(){
       if(pts<f.max){missing.push([f.max-pts,f.options[v][2],f.q]);}
     } else rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),null,f.max]);
   });
-  const pct=Math.round(score); // total maxes to 100
+  let rawPct=Math.round(score); // total maxes to 100
+  // --- preparation hold ---------------------------------------------------
+  // Under three days between creating the project and launching it, at a goal
+  // of $5,000 or more, the score is held at the top of "Not ready yet".
+  // Basis: 2023+ archive, held inside goal band. $5–25k asks launched in under
+  // three days funded at 33% (78–81% when prepared 2 months+); $25k+ asks at
+  // 8–11% (64–69% prepared). Below $5,000 the effect largely disappears, so
+  // the hold does not apply there.
+  const HOLD_CAP=44;
+  const held=(state.prep===3 && state.goal!=null && state.goal>=5000 && rawPct>HOLD_CAP);
+  const pct=held?HOLD_CAP:rawPct;
+  const hb=document.getElementById("holdbanner");
+  if(held){
+    hb.style.display="block";
+    hb.innerHTML='<b>Your score is being held at '+HOLD_CAP+'.</b> Everything else you\'ve answered adds up to '+rawPct+
+      ' &#8212; but you\'re planning to launch within three days of creating the project, on a goal of $'+state.goal.toLocaleString()+'.'+
+      '<br><br>In the 2023+ archive, campaigns at your goal size that launched that fast funded at a small fraction of the rate of ones prepared for two months or more. It is the largest gap in the data on a change that costs nothing but time.'+
+      '<br><br>Change your answer on preparation time and the full score comes back.';
+  } else { hb.style.display="none"; }
   // ring
   const off=402-402*pct/100;const ring=document.getElementById("ring");
   ring.style.strokeDashoffset=off;
@@ -478,7 +505,7 @@ function render(){
     if(pts!=null){const ratio=pts/mx;col=ratio>=.9?"var(--good)":ratio>=.5?"var(--warn)":"var(--bad)";txt=pts+" / "+mx;}
     b.innerHTML='<div><span class="dot" style="background:'+col+'"></span>'+name+'</div><div class="pts">'+txt+'</div>';
     bd.appendChild(b);});
-  document.getElementById("srcline").innerHTML="Scoring weights reflect this project's Kickstarter analysis: goal size (biggest lever), pre-launch reservations, prototype+video (54% vs 39% funded), manufacturing costing, live-testing/audience, timeline, risks, simplicity. Odds estimate = category & goal-band base rates (2009–17 baseline gradient) adjusted for preparation — an <b>estimate to guide decisions, not a guarantee</b>.";
+  document.getElementById("srcline").innerHTML="Scoring weights were re-fitted in July 2026 against 57,982 campaigns launched 2023 onward, compared only within the same subcategory: goal size (biggest lever), campaign length, preparation time, pre-launch reservations, prototype, manufacturing costing, live-testing/audience, delivery timeline, risks, reward simplicity, video. Four of those &#8212; prototype, costing, audience testing, risks &#8212; cannot be measured from public data, so their weights are judgement, not fit, and we say so. Odds estimate = category & goal-band base rates (2009–17 baseline gradient) adjusted for preparation — an <b>estimate to guide decisions, not a guarantee</b>.";
   // report button + live refresh
   lastCalc={pct,answered,missing,totalQs,unanswered,
     odds:(state.goal!=null&&catOk&&answered>=3)?Math.round(Math.max(5,Math.min(92,band(state.goal,GOALBASE)+catMod()+(pct-55)*0.35))):null};
@@ -636,14 +663,16 @@ function buildReport(scroll){
   const whyBits=[];
   whyBits.push(["Goal: "+goalStr, state.goal<=5000?"A modest ask is your strongest structural advantage — campaigns under $5k fund at ~47–54%, and you only need ~"+Math.max(1,Math.round(state.goal/72))+" backers at the median $72 pledge.":"Campaigns asking "+goalStr+" fund at ~"+goalRate+"% — the bigger the ask, the steeper the hill, because all-or-nothing means 99% funded pays $0. Every dollar you cut from the goal buys real odds."]);
   const answers={proto:["A working prototype is the strongest single proof you can offer.","A rough prototype is a start — get one clean demo working.","Renders don't fund. Kickstarter literally requires a working prototype for hardware."],
-   video:["Your demo video is doing the heavy lifting — 54% of projects with video fund vs 39% without.","A basic video helps; putting a live demo in the first 30 seconds is the upgrade.","No video is the single easiest fix on this list: 54% vs 39%."],
+   video:["A working demo on video still helps — though its edge has narrowed sharply: +21.6 points in 2015–19, +5.4 points in 2023–26.","A basic video is close to enough now. Put a live demo in the first 30 seconds and move on to the list.","Add one, but cheaply. Video is worth roughly +5 points today, not the +22 it was worth a decade ago — don't spend your whole runway here."],
    list:["$1 reservations are the strongest pre-launch signal there is — they convert at 20–50%.","An email list is good; converting it to $1 reservations funds you on day one.","A social following alone converts at ~3–5%. Collect emails and reservations.","Launching cold is the most common first-timer mistake in the data."],
    mfg:["Real quotes with padding — you've defused the thing that killed Coolest Cooler.","A rough estimate is where most fatal errors hide. Get the real quote.","Guessing manufacturing cost is how $13M campaigns still die.","No manufacturing risk — one whole failure mode you get to skip."],
    time:["A padded date protects the trust every hardware creator is borrowing.","'Realistic' usually means late — most hardware ships late. Pad it.","An optimistic date is a promise you'll probably break in public.","Backers can't trust a date that doesn't exist."],
    risk:["A specific risks section signals you see the road clearly.","Generic risk talk reads as boilerplate — name your real risks.","This section is mandatory — and honesty here builds trust."],
-   simple:["Tight and simple — the shape that both funds and ships best.","Trimming tiers and days measurably helps: choice overload lowers pledges.","Complexity is a tax on both your funding and your fulfillment."],
+   simple:["A tight set of tiers — the shape that both funds and ships best.","Trimming tiers measurably helps: choice overload lowers pledges.","Complexity is a tax on both your funding and your fulfillment."],
+   prep:["Two months or more of preparation puts you in the strongest band in the data — at $25k+ goals that band funded at 64–69%.","A few weeks of preparation is real. More is better: the jump from a fortnight to two months is one of the largest in the archive.","Under a fortnight is thin. Campaigns prepared for two months funded far better at every goal size tested.","Launching within three days of creating the project is the single most damaging thing on this list — and the cheapest to fix. Wait."],
+   dur:["Under 30 days beat the 30-day default in sixteen matched cells out of sixteen.","The default is 30 days and 43% of creators take it. Shorter did better in every cell tested.","Campaigns running 45+ days had the worst outcomes in every goal band. A long campaign will not rescue a weak one."],
    net:["Real feedback + committed early backers — the pattern behind day-one momentum.","Feedback is a start; the missing half is people committed to pledge day one.","Untested ideas meet their first real audience at the worst time: launch day."]};
-  [["proto",10],["video",8],["list",18],["mfg",12],["time",8],["risk",6],["simple",8],["net",10]].forEach(([id,max])=>{
+  [["proto",10],["video",4],["list",9],["prep",10],["mfg",12],["time",6],["risk",6],["dur",11],["simple",4],["net",10]].forEach(([id,max])=>{
     const f=F.find(x=>x.id===id), v=state[id], pts=f.options[v][1];
     whyBits.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim()+": "+f.options[v][0], answers[id][v]+" ("+pts+"/"+max+" pts)"]);
   });
