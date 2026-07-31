@@ -313,15 +313,15 @@ const F = [
   options:[["List + $1 reservations",9,""],["Email list only",5,"Convert the list into $1 reservations so you can fund on day one."],
   ["Some social following",2,"Start collecting emails now and take $1 reservations before launch."],
   ["Nothing yet",0,"Build a pre-launch list + $1 reservations — this funds you on day one and trips Kickstarter's discovery algorithm."]]},
- {id:"prep",q:"How long between creating your project page and launching it?",hint:"The cheapest lever there is — it costs nothing but patience. At $25k+ goals, campaigns launched within three days funded at 8–11%; those prepared two months or more funded at 64–69%.",max:10,
+ {id:"prep",q:"How long have you been preparing this campaign?",hint:"The cheapest lever there is — it costs nothing but patience. In the archive we could only measure this as the gap between a project page being created and going live: at $25k+ goals, campaigns launched within three days of creating the page funded at 8–11%, against 64–69% for those with two months or more. <b>If you drafted elsewhere first — in a doc, a spreadsheet, another draft — count that time here.</b> It is preparation that matters, not the date on the page.",max:10,
   options:[["Two months or more",10,""],["Two weeks to two months",8,"Another few weeks of preparation is the cheapest improvement available to you."],
   ["Three to fourteen days",5,"Slow down. The gap between a fortnight and two months is one of the largest in the data."],
-  ["Under three days",0,"Don't launch this week. Campaigns launched within three days of being created fund at a fraction of the rate of prepared ones, and waiting costs you nothing."]]},
- {id:"mfg",q:"Have you costed manufacturing for real?",hint:"Hardware costs — including shipping, packaging & duties — routinely run several times over naive guesses.",max:12,
+  ["Under three days",0,"Campaigns at this level of preparation funded at a small fraction of the rate of prepared ones, and more time costs nothing but patience. If you have been preparing elsewhere for weeks or months, count that time instead — this answer is about your preparation, not the date on the page."]]},
+ {id:"mfg",q:"Have you costed manufacturing for real?",hint:"Hardware costs — including shipping, packaging & duties — routinely run several times over naive guesses. Whatever you commit to, commit only to costs you could still absorb if the campaign underperforms.",max:12,
   options:[["Real quote + padded",12,""],["Rough estimate",6,"Get a real bill-of-materials and quote (with shipping, packaging & duties), then pad it."],
   ["Guessed it",0,"Get a real manufacturing quote BEFORE setting your price and goal — underpricing kills delivery."],
   ["Digital / no manufacturing",12,""]]},
- {id:"time",q:"Is your delivery date conservative?",hint:"Most hardware projects ship late. Under-promise.",max:6,
+ {id:"time",q:"Is your delivery date conservative?",hint:"Most hardware projects ship late. Under-promise — and pick a date you could still meet if your life gets busy, because a campaign that funds becomes an obligation you have to carry.",max:6,
   options:[["Padded / conservative",6,""],["Realistic",4,"Add buffer — most projects ship late; a missed date burns trust."],
   ["Optimistic",2,"Push your date out. Late delivery is the #1 way campaigns lose backer trust."],
   ["No date yet",0,"Set an honest, padded delivery date."]]},
@@ -339,6 +339,7 @@ const F = [
   ["Not yet",0,"Test the idea with real people and gather early backers — day-one pledges are what make a launch take off."]]},
 ];
 const GOALBASE=[[1000,55],[5000,47],[10000,40],[25000,34],[50000,25],[100000,17],[1e12,8]];
+const MEASURED={goal:1,video:1,list:1,prep:1,dur:1}; // fitted from data; the other six are judgement
 const GOALPTS =[[1000,18],[5000,16],[10000,12],[25000,7],[50000,4],[100000,2],[1e12,0]];
 function band(v,t){for(const [c,x] of t){if(v<=c)return x;}return t[t.length-1][1];}
 
@@ -428,18 +429,18 @@ function render(){
   let score=0,maxDone=0,answered=0,total=0;
   const rows=[],missing=[];
   // goal
-  total+=20;
-  if(state.goal!=null){answered++;const gp=band(state.goal,GOALPTS);score+=gp;maxDone+=20;
-    rows.push(["Funding goal size",gp,20]);
-    if(gp<20){const tip=state.goal>10000?"Scope your ask down (or stage it). Big goals fail in all-or-nothing — target what you can raise in 48 hours.":"Lower is better — aim for the true minimum you can hit fast.";missing.push([20-gp,tip,"Cut your goal"]);}
-  } else rows.push(["Funding goal size",null,20]);
+  total+=18;
+  if(state.goal!=null){answered++;const gp=band(state.goal,GOALPTS);score+=gp;maxDone+=18;
+    rows.push(["Funding goal size",gp,18,"goal"]);
+    if(gp<18){const tip=state.goal>10000?"Scope your ask down (or stage it). Big goals fail in all-or-nothing — target what you can raise in 48 hours.":"Lower is better — aim for the true minimum you can hit fast.";missing.push([18-gp,tip,"Cut your goal"]);}
+  } else rows.push(["Funding goal size",null,18,"goal"]);
   // choice factors
   F.filter(f=>f.max).forEach(f=>{
     total+=f.max;const v=state[f.id];
     if(v!=null){answered++;const pts=f.options[v][1];score+=pts;maxDone+=f.max;
-      rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),pts,f.max]);
+      rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),pts,f.max,f.id]);
       if(pts<f.max){missing.push([f.max-pts,f.options[v][2],f.q]);}
-    } else rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),null,f.max]);
+    } else rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),null,f.max,f.id]);
   });
   let rawPct=Math.round(score); // total maxes to 100
   // --- preparation hold ---------------------------------------------------
@@ -456,9 +457,10 @@ function render(){
   if(held){
     hb.style.display="block";
     hb.innerHTML='<b>Your score is being held at '+HOLD_CAP+'.</b> Everything else you\'ve answered adds up to '+rawPct+
-      ' &#8212; but you\'re planning to launch within three days of creating the project, on a goal of $'+state.goal.toLocaleString()+'.'+
-      '<br><br>In the 2023+ archive, campaigns at your goal size that launched that fast funded at a small fraction of the rate of ones prepared for two months or more. It is the largest gap in the data on a change that costs nothing but time.'+
-      '<br><br>Change your answer on preparation time and the full score comes back.';
+      ' &#8212; but you\'ve said you have under three days of preparation behind a goal of $'+state.goal.toLocaleString()+'.'+
+      '<br><br>This hold is a choice we made, not something the numbers did on their own. At your goal size, campaigns in the archive with that little preparation funded at a small fraction of the rate of ones prepared for two months or more. It is the largest gap in our data on a change that costs nothing but time, so we hold the score rather than let ten good answers bury it. The $5,000 line is where that gap becomes severe; it is a judgement about where to draw it, not the only defensible place to draw it.'+
+      '<br><br><b>If this does not describe you, it is probably our measurement, not you.</b> If you have been preparing for weeks or months somewhere else and only created the Kickstarter page recently, that time counts. Answer the preparation question for your total preparation and the full score comes back.'+
+      '<br><br>Nothing here stops you launching. It is your campaign and your call.';
   } else { hb.style.display="none"; }
   // ring
   const off=402-402*pct/100;const ring=document.getElementById("ring");
@@ -500,12 +502,13 @@ function render(){
   top.forEach(m=>{const d=el("div","fix");d.innerHTML='<div class="pt">+'+m[0]+'</div><div class="ft"><b>'+m[2].replace(/\?.*/,"").replace(/\(.*/,"").trim()+'</b><span>'+m[1]+'</span></div>';fx.appendChild(d);});
   // breakdown
   const bd=document.getElementById("breakdown");bd.innerHTML="";
-  rows.forEach(r=>{const [name,pts,mx]=r;const b=el("div","brow");
+  rows.forEach(r=>{const [name,pts,mx,fid]=r;const b=el("div","brow");
+    const tag=MEASURED[fid]?'<span style="font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--muted);border-radius:3px;padding:1px 4px;margin-left:7px;opacity:.75">measured</span>':'<span style="font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px dashed var(--muted);border-radius:3px;padding:1px 4px;margin-left:7px;opacity:.55">judgement</span>';
     let col="var(--muted)",txt="—";
     if(pts!=null){const ratio=pts/mx;col=ratio>=.9?"var(--good)":ratio>=.5?"var(--warn)":"var(--bad)";txt=pts+" / "+mx;}
-    b.innerHTML='<div><span class="dot" style="background:'+col+'"></span>'+name+'</div><div class="pts">'+txt+'</div>';
+    b.innerHTML='<div><span class="dot" style="background:'+col+'"></span>'+name+tag+'</div><div class="pts">'+txt+'</div>';
     bd.appendChild(b);});
-  document.getElementById("srcline").innerHTML="Scoring weights were re-fitted in July 2026 against 57,982 campaigns launched 2023 onward, compared only within the same subcategory: goal size (biggest lever), campaign length, preparation time, pre-launch reservations, prototype, manufacturing costing, live-testing/audience, delivery timeline, risks, reward simplicity, video. Four of those &#8212; prototype, costing, audience testing, risks &#8212; cannot be measured from public data, so their weights are judgement, not fit, and we say so. Odds estimate = category & goal-band base rates (2009–17 baseline gradient) adjusted for preparation — an <b>estimate to guide decisions, not a guarantee</b>.";
+  document.getElementById("srcline").innerHTML="Scoring weights were re-fitted in July 2026 against 57,982 campaigns launched 2023 onward, compared only within the same subcategory. Five factors &#8212; goal size, campaign length, preparation, pre-launch reservations, video &#8212; are <b>measured</b>: their weights come from that fit. The other six &#8212; prototype, manufacturing costing, audience testing, delivery timeline, risks, reward simplicity &#8212; cannot be measured from any public data and never will be, so their weights are <b>judgement</b>. Each row above is labelled with which it is. The conversion from statistical effect into points is a ranking, not a precise measurement, and the 85/70/45 verdict cut-offs are communication devices rather than findings. Odds estimate = category &amp; goal-band base rates (2009–17 baseline gradient) adjusted for preparation — an <b>estimate to guide decisions, not a guarantee</b>.";
   // report button + live refresh
   lastCalc={pct,answered,missing,totalQs,unanswered,
     odds:(state.goal!=null&&catOk&&answered>=3)?Math.round(Math.max(5,Math.min(92,band(state.goal,GOALBASE)+catMod()+(pct-55)*0.35))):null};
