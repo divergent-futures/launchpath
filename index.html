@@ -655,9 +655,9 @@ function buildReport(scroll){
   if(/audience|early backers/.test(wk)){twins=[CASES.pebble,CASES.meshle];twinWhy="Your biggest gap is the launch crowd — and it's the clearest life-or-death split in the data. Pebble arrived with a huge audience; MESHLE arrived with a good product and 327 backers.";}
   else if(/goal/.test(wk)){twins=[CASES.flens,CASES.meshle];twinWhy="Your biggest gap is the size of the ask. These two are real near-twins — similar hardware, nearly the same goal — separated by scope and crowd. One kept its raise; the other kept nothing.";}
   else if(/manufactur|delivery/.test(wk)){twins=[CASES.pebble,CASES.coolest];twinWhy="Your biggest gap is the make-and-ship side. This pair is the classic warning: both raised eight figures; only one figured out what building the thing actually costs.";}
-  else if(/prototype|video/.test(wk)){twins=[CASES.pebble,CASES.coolest];twinWhy="Your biggest gap is proof. Pebble's working-prototype video launched the record run. Coolest Cooler proves the flip side: its 2013 campaign failed until a sharper demo fixed the pitch — and also that a great video can't rescue bad costing.";}
+  else if(/prototype|video/.test(wk)){twins=[CASES.ring,CASES.coolest];twinWhy="Your biggest gap is proof. Ring (then DoorBot) got rejected on Shark Tank in 2013 — not enough proof yet — and kept building until Amazon paid ~$1B for it in 2018. Coolest Cooler is the flip side: a sharper video fixed its pitch in 2014, but a great video still couldn't fix the costing nobody had done.";}
   else if(/Risks|simple/.test(wk)){twins=[CASES.flens,CASES.coolest];twinWhy="Your remaining gaps are discipline gaps — scope, clarity, honesty about risk. Small and tight beats big and vague.";}
-  else {twins=[CASES.pebble,CASES.spanx];twinWhy="No major gaps — so here's perspective instead. Pebble is the reminder that funded isn't finished; Spanx is the reminder of what staying in control of your own company can be worth.";}
+  else {twins=[CASES.quibi,CASES.spanx];twinWhy="No major gaps — so here's perspective instead. Quibi is the reminder that money and preparation can't buy product-market fit — they raised $1.75 billion and still shut down within six months. Spanx is the reminder of what staying in control of your own company can be worth.";}
   // digital warning
   const isDigital=(state.mfg===3);
   const digitalNote=(isDigital&&state.catName==="Technology")?'<p><b>One honest flag:</b> on Kickstarter, software-only projects are the hardest sell there is — apps fund at ~7% and software at ~14%, versus ~39–55% for physical hardware. Backers pre-order <i>things</i>. If you can give your idea a physical edition — a device, a kit, a box — your odds change dramatically. If it must stay pure software, consider whether crowdfunding is the right first path at all.</p>':
@@ -687,24 +687,17 @@ function buildReport(scroll){
   // full fixes
   const fixHtml=sortedMiss.length?sortedMiss.map(m=>'<div class="fixfull"><div class="fp">+'+m[0]+' pts</div><div><b>'+m[2].replace(/\?.*/,"").replace(/\(.*/,"").trim()+'</b><br><span style="color:var(--ts)">'+(m[1]||"Push this to the top tier.")+'</span></div></div>').join(""):'<p>Nothing left on the list — your prep is as strong as this checklist can measure. The remaining work is execution.</p>';
   const maxCmp=Math.max(70,Math.ceil(Math.max(odds,catRate)+8));
-  const html=
-  '<div class="card rep"><button class="printbtn" onclick="window.print()">Print / save as PDF</button>'+
-  '<h2>Your Campaign Report</h2><p class="repsub">Score '+pct+'/100 · estimated '+odds+'% chance of funding · '+esc(headline)+' · goal '+goalStr+'</p>'+
 
+  const standHtml=
   '<div class="repsec"><h3>Where you stand</h3>'+
   '<p>We don\'t collect anyone\'s answers (nothing you type leaves this page), so we can\'t compare you to "other users." We can do better: compare you to <b>378,662 real Kickstarter campaigns</b>.</p>'+
   cmpBar("You (estimated)",odds,maxCmp,odds>=40?"var(--good)":"var(--warn)")+
   cmpBar(esc(catShort)+" average",Math.round(catRate),maxCmp,"var(--muted)")+
   cmpBar("Platform average",40,maxCmp,"var(--muted)")+
   '<p>'+(odds>catRate?("Prepared the way you are, you'd sit <b>above</b> the "+esc(catShort)+" average — preparation is doing exactly what the data says it does."):("Right now you'd sit <b>below</b> the "+esc(catShort)+" average of "+Math.round(catRate)+"%. The fix list below is how that number moves."))+
-  ' For calibration: the median <i>successful</i> project raises about <b>$5,100 from 71 backers</b> — the typical win is modest, planned, and real.</p>'+sizeLine+digitalNote+'</div>'+
+  ' For calibration: the median <i>successful</i> project raises about <b>$5,100 from 71 backers</b> — the typical win is modest, planned, and real.</p>'+sizeLine+digitalNote+'</div>';
 
-  '<div class="repsec"><h3>Why your score is '+pct+'</h3>'+whyHtml+'</div>'+
-
-  '<div class="repsec"><h3>Two real stories next to yours</h3><p>'+twinWhy+'</p><div class="twin">'+caseCard(twins[0])+caseCard(twins[1])+'</div>'+
-  '<p style="color:var(--ts);font-size:12px">All examples are real campaigns/companies with public numbers — no composites, no made-up stories.</p></div>'+
-
-  (function(){const m=matchCases();if(!m.cards.length)return "";
+  const matchedHtml=(function(){const m=matchCases();if(!m.cards.length)return "";
    const lvlTxt=(m.level==="sub"?('subcategory (<b>'+esc(m.sname)+'</b>) and goal size'):m.level==="cat"?'category and goal size':m.level==="mixed"?'corner of Kickstarter and goal size (closest available examples)':(m.fallback?'goal size (your corner has fewer examples in the database, so these span all categories)':'goal size'));
    const lvlShort=(m.level==="sub"?'subcategory and goal size':m.level==="cat"?'category and goal size':m.level==="mixed"?'corner of Kickstarter and goal size':'goal size');
    const n=m.cards.length;
@@ -715,19 +708,34 @@ function buildReport(scroll){
    const dnote=!m.dtok.length?"":(m.descHits?
      '<p style="color:var(--ts);font-size:12px">'+(m.descHits===n?'All '+n+' examples below match':m.descHits+' of the '+n+' examples below match')+' your description'+(m.descHits===n?'. ':'; for the rest we found no word match in that outcome band, so those fall back to '+lvlShort+'. ')+'It\'s plain word overlap and nothing cleverer, and it only changes which real campaigns surface — never your score or your odds.</p>':
      '<p style="color:var(--ts);font-size:12px">We looked for campaigns sharing words with your description (&#8220;'+esc(m.desc)+'&#8221;) and found none in the database, so these come from '+lvlShort+' alone.</p>');
-   return '<div class="repsec"><h3>Real campaigns matched to yours</h3>'+
+   return '<div class="repsec"><h3>Campaigns like yours, and what happened to them</h3>'+
    intro+dnote+
    '<div class="dbgrid">'+m.cards.map(dbCard).join("")+'</div>'+
-   '<button class="morebtn" onclick="matchOffset++;buildReport(false)">Show me different matches</button></div>';})()+
+   '<button class="morebtn" onclick="matchOffset++;buildReport(false)">Show me different matches</button></div>';})();
 
-  '<div class="repsec"><h3>Your full fix list, in order</h3>'+fixHtml+'</div>'+
+  const whyHtmlSec='<div class="repsec"><h3>Why your score is '+pct+'</h3>'+whyHtml+'</div>';
 
+  const fixesHtml='<div class="repsec"><h3>Your full fix list, in order</h3>'+fixHtml+'</div>';
+
+  const storiesHtml=
+  '<div class="repsec"><h3>What the numbers stop short of</h3>'+
+  '<p style="margin-top:0">Everything above is the public record, and the public record ends the day a campaign closes. Kickstarter publishes what was raised. It never publishes whether the thing actually shipped. These two are chosen by <b>your weakest answer</b> above &#8212; not by your category &#8212; because that is where the gap between funded and finished opens up.</p>'+
+  '<p style="color:var(--ts);font-size:13px">'+twinWhy+'</p><div class="twin">'+caseCard(twins[0])+caseCard(twins[1])+'</div>'+
+  '<p style="color:var(--ts);font-size:12px">All examples are real campaigns/companies with public numbers — no composites, no made-up stories.</p></div>';
+
+  const bottomHtml=
   '<div class="repsec"><h3>The honest bottom line</h3><p>'+
   (pct>=85?"You've done the preparation most first-timers skip. Launch when the last fixes are done — and remember Pebble: funded is the starting line.":
    pct>=70?"You're close. Do the fix list before you launch, not after — the difference between 82% funded and 110% funded is everything.":
    pct>=45?"Don't launch yet — and that's good news, because every point you're missing is a fix you control. Work the list, then re-score.":
    "If you launched today, the data says it very likely wouldn't fund — and you'd burn your one first impression. Work the list top to bottom, re-score, and launch when this report changes its mind.")+
   '</p><p style="color:var(--ts);font-size:12px">Estimates come from historical Kickstarter data (2009–2017 baseline, 378,662 projects; cross-checked against 2022–2025). They guide decisions; they don\'t promise outcomes.</p></div></div>';
+
+  const html=
+  '<div class="card rep"><button class="printbtn" onclick="window.print()">Print / save as PDF</button>'+
+  '<h2>Your Campaign Report</h2><p class="repsub">Score '+pct+'/100 · estimated '+odds+'% chance of funding · '+esc(headline)+' · goal '+goalStr+'</p>'+
+  standHtml+matchedHtml+whyHtmlSec+fixesHtml+storiesHtml+bottomHtml;
+
   const wrapEl=document.getElementById("reportwrap");
   wrapEl.innerHTML=html;wrapEl.style.display="block";reportOpen=true;
   if(scroll)wrapEl.scrollIntoView({behavior:"smooth",block:"start"});
