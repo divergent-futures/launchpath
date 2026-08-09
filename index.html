@@ -165,12 +165,30 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
   .ringcard{padding:18px}
   .wrap{padding:20px 14px 60px}
 }
+/* ---- path-forward expandable fix cards ---- */
+.fixcard{border:1px solid var(--border);border-radius:11px;margin:10px 0;overflow:hidden}
+.fixcard summary{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer;list-style:none}
+.fixcard summary::-webkit-details-marker{display:none}
+.fixcard summary::after{content:"\25B8";margin-left:auto;color:var(--ts);flex:0 0 auto;transition:transform .15s}
+.fixcard[open] summary::after{transform:rotate(90deg)}
+.fixcard .gbody{padding:2px 14px 14px;border-top:1px solid var(--border)}
+.gwhy{color:var(--ts);font-size:13.5px}
+.gsteps{margin:8px 0;padding-left:20px}
+.gsteps li{margin:5px 0;font-size:13.5px}
+.gpair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:640px){.gpair{grid-template-columns:1fr}}
+.gcaselink{display:inline-block;margin-top:6px;font-size:12px}
+.gnote{color:var(--ts);font-size:12.5px;font-style:italic}
+.evtag{display:block;color:var(--ts);font-size:11.5px;margin:6px 0 0}
+.gact{display:flex;gap:9px;align-items:flex-start;margin-top:10px;font-size:13.5px;border:1px solid var(--border);padding:10px 12px;border-radius:9px;cursor:pointer}
+.gact input{margin-top:3px}
 </style></head>
 <body><div class="viz">
 <nav class="topnav">
   <span class="brand">Launch<span>path</span></span>
   <a href="#home" data-tab="home">What is this?</a>
   <a href="#score" data-tab="score">Check your campaign</a>
+  <a href="#creators" data-tab="creators">Real Creators</a>
   <a href="#faq" data-tab="faq">FAQ</a>
   <a href="#data" data-tab="data">Our data &amp; method</a>
 </nav>
@@ -245,6 +263,14 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
 </div>
 
 <!-- ================= FAQ ================= -->
+<!-- ================= REAL CREATORS ================= -->
+<div class="wrap tabpane" id="pane-creators">
+<h2>Real Creators</h2>
+<p>This tab will hold interviews with real Kickstarter creators — solo makers up to established companies — talking about what worked on their campaigns and what they'd do differently, alongside images from their campaigns used with their <b>written permission</b>.</p>
+<p><b>Nothing lives here yet.</b> Interviews are being arranged, and nothing appears without the creator's signed consent. When it fills, every entry follows the same rules as the rest of this tool: links out, never embeds; no tracking; and a creator's appearance is <b>not</b> an endorsement of Launchpath — it's their story, told so the next first-timer learns from it.</p>
+<p style="color:var(--ts);font-size:13px">A creator's own account of their campaign is testimony, not statistics — entries here will be labelled that way, exactly like the judgement factors in the score.</p>
+</div>
+
 <div class="wrap tabpane" id="pane-faq">
 <h1>Questions, answered straight</h1>
 <p class="sub">The things creators, parents, and program leads actually ask.</p>
@@ -432,14 +458,14 @@ function render(){
   total+=18;
   if(state.goal!=null){answered++;const gp=band(state.goal,GOALPTS);score+=gp;maxDone+=18;
     rows.push(["Funding goal size",gp,18,"goal"]);
-    if(gp<18){const tip=state.goal>10000?"Scope your ask down (or stage it). Big goals fail in all-or-nothing — target what you can raise in 48 hours.":"Lower is better — aim for the true minimum you can hit fast.";missing.push([18-gp,tip,"Cut your goal"]);}
+    if(gp<18){const tip=state.goal>10000?"Scope your ask down (or stage it). Big goals fail in all-or-nothing — target what you can raise in 48 hours.":"Lower is better — aim for the true minimum you can hit fast.";missing.push([18-gp,tip,"Cut your goal","goal"]);}
   } else rows.push(["Funding goal size",null,18,"goal"]);
   // choice factors
   F.filter(f=>f.max).forEach(f=>{
     total+=f.max;const v=state[f.id];
     if(v!=null){answered++;const pts=f.options[v][1];score+=pts;maxDone+=f.max;
       rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),pts,f.max,f.id]);
-      if(pts<f.max){missing.push([f.max-pts,f.options[v][2],f.q]);}
+      if(pts<f.max){missing.push([f.max-pts,f.options[v][2],f.q,f.id]);}
     } else rows.push([f.q.replace(/\?.*/,"").replace(/\(.*/,"").trim(),null,f.max,f.id]);
   });
   let rawPct=Math.round(score); // total maxes to 100
@@ -530,6 +556,105 @@ const CASES={
  spanx:{n:"Spanx",win:1,f:"Started with $5,000 of savings and zero investors for 21 years — the founder still owned it at a $1.2B valuation (2021). Keeping ownership is a strategy, not an accident."},
  quibi:{n:"Quibi",win:0,f:"Raised $1.75 billion from the biggest names in media — and shut down ~6.5 months after launch (2020). Money can't buy product-market fit."}};
 function caseCard(c){return '<div class="case '+(c.win?'win':'lose')+'"><span class="badge">'+(c.win?'MADE IT':'DIDN\'T')+'</span><div class="cn">'+c.n+'</div><div class="ct2">'+c.f+'</div></div>';}
+
+// ---------- path-forward guides: how to fix each factor, with worked examples ----------
+// tag: PAGE = every claim checkable on the linked Kickstarter pages.
+//      DATA = the example attribute (prep time, pre-launch) is recorded in the June 2026
+//             dataset and is NOT visible on the public page — said out loud on the card.
+//      JUDG = judgement factor; examples are the hand-researched case studies.
+const GUIDES={
+ goal:{tag:"PAGE",
+  w:"Kickstarter is all-or-nothing — anything under 100% pays $0. Under-$5k asks fund at ~47–54%; over $100k, ~7.5%. The median win is $5,100 from 71 backers: small and planned, not viral.",
+  s:["Work out your minimum viable run — the smallest batch you could honestly make and ship.",
+     "Cost that run (see the manufacturing card), add ~8–10% for fees, add your shipping.",
+     "That total is your goal. Stretch goals get announced mid-campaign — never baked into the ask.",
+     "Sanity-check in backers: goal ÷ $72 (median pledge) = humans who must say yes. Can't name where the first third come from? Still too big."],
+  a:"Write down your minimum viable run and cost it before touching the goal number.",
+  p:{g:{n:"Super Charge Bros — wireless phone charger",d:"Goal $1,000 → funded 259% with 41 backers (2024). Asked under the Gadgets median and cleared it.",u:"https://www.kickstarter.com/projects/super-charge-bros-nostalgic-wireless-phone-charger"},
+     b:{n:"Paladin Pro — hidden camera detector",d:"Goal $55,000 → raised $47,359 (86%) from 260 backers — kept $0. At a goal of what it actually raised, this campaign funds.",u:"https://www.kickstarter.com/projects/paladin-pro-the-hidden-camera-detector-for-home-or-travel"}}},
+ prep:{tag:"DATA",
+  w:"The cheapest, biggest lever in 189,498 campaigns: at $25k+ goals, launching within three days of creating the page funded at 8–11%; prepared two months or more, 64–69%. This is also why the score holds at 44 when preparation is under three days on a $5,000+ goal — this card is the way out.",
+  s:["Create your Kickstarter page now — creating starts the clock and costs nothing. Launching is the only irreversible act.",
+     "Weeks 1–2: film the demo, request manufacturing quotes, put the pre-launch page live.",
+     "Weeks 3–6: grow the list, collect the quotes, get three strangers to read your draft cold.",
+     "Final week: dry-run rewards, dates, and your first-48-hours plan.",
+     "Six weeks is the practical target — you don't need a year."],
+  a:"Pick a launch date at least six weeks out and write down what each week is for.",
+  p:{g:{n:"PicoBricks for micro:bit — STEM kit",d:"147 days from page-creation to launch → funded 654% with 435 backers (2024).",u:"https://www.kickstarter.com/projects/picobricks-for-micro-bit-your-programmable-stem-playground"},
+     b:{n:"Wizard's Chest — interactive puzzle box",d:"Launched 3 days after creating the page, $5,000 goal → 21% funded, 17 backers.",u:"https://www.kickstarter.com/projects/wizards-chest"}}},
+ dur:{tag:"PAGE",
+  w:"Kickstarter defaults to 30 days and 43% of creators take it. Under-30-day campaigns beat the default in 16 of 16 matched cells; 45+ days did worst everywhere. Money arrives in the first 48 hours and the last 48 — a shorter run mostly cuts plateau.",
+  s:["Set 21–28 days.",
+     "Plan day one: your list and reservations are what fund the first 30%.",
+     "Plan the final 48: Kickstarter emails everyone who clicked “remind me” — drive them there all campaign.",
+     "Wanting 60 days because you suspect you'll need it is a pre-launch-audience problem — fix that card instead."],
+  a:"Set the duration to 21–28 days and write your day-one and final-48 plans — one paragraph each.",
+  p:{g:{n:"Apple WWDC 2025 Pin Set",d:"7-day run → funded 744% with 149 backers (2025).",u:"https://www.kickstarter.com/projects/apple-wwdc-2025-pin-set"},
+     b:{n:"U.S. Made Tactical Metal Multi-Tool",d:"60-day run, $3,500 goal → 55% funded, 19 backers. The long runway didn't save it.",u:"https://www.kickstarter.com/projects/us-made-tactical-metal-multi-tool-aerospace-grade-finish"}}},
+ proto:{tag:"JUDG",
+  w:"For hardware this is Kickstarter's own rule: physical products must show a working prototype, and renders are banned. It's also the strongest single proof you can offer. Software: a working demo or playable build is your prototype — function shown, not promised.",
+  s:["Prove function, not finish — ugly and working beats beautiful and fake.",
+     "Build the one core function first. One joint moving under control is a prototype; the case and the app are not the proof.",
+     "“Looks-like” and “works-like” can be two different objects — show both and say which is which.",
+     "Can't reach one working function? The campaign is early — and no video fixes that."],
+  a:"Demonstrate the single core function working, on camera, this month — however rough."},
+ mfg:{tag:"JUDG",
+  w:"Guessing manufacturing cost is how $13M campaigns still die — Coolest Cooler raised $13.3M and 20,000+ backers never got a cooler. Pure software: skip the BOM and cost tooling, services, and your time instead; the padding rule still applies.",
+  s:["Write a full bill of materials: every part, the packaging, the box it ships in.",
+     "Get three quotes at your minimum-run quantity. PCB houses quote automatically from board files; machine shops and makerspaces answer small-batch emails.",
+     "Add what first-timers forget: freight to you, duties, fulfillment postage, payment fees, ~5% breakage.",
+     "Pad the total 20–30% — every hardware post-mortem says something you didn't list will cost money.",
+     "If padded cost × run is bigger than your goal, the answer is the goal card, not optimism."],
+  a:"Build the BOM and send three quote requests before touching your goal again."},
+ list:{tag:"DATA",
+  w:"The strongest lever in the data: campaigns with a pre-launch page led in 125 of 129 controlled comparisons, median +18.9 points. $1 reservations convert at 20–50%; cold social followers at ~3–5%.",
+  s:["Turn on Kickstarter's own pre-launch page — free, one click.",
+     "Make one landing page: a photo of the real prototype, one paragraph, an email box.",
+     "Take $1 reservations if you can — a dollar is a commitment, a follow is a maybe.",
+     "Go where your product's people already are: the subreddit, the Discord, the club. Builders showing work are welcome where advertisers aren't.",
+     "Target day-one people covering ~30% of goal — at $5,000 that's 20–30 humans you can count."],
+  a:"Get the pre-launch page and landing page live this week, and set your day-one number.",
+  p:{g:{n:"Pi Tin — DIY handheld in a mint tin",d:"Ran a pre-launch page → funded 197% with 81 backers (2025).",u:"https://www.kickstarter.com/projects/pi-tin-diy-game-emulation-console-in-a-tin"},
+     b:{n:"45W GaN charger + power bank",d:"No pre-launch page recorded → 58% funded, 34 backers, kept $0.",u:"https://www.kickstarter.com/projects/45w-gan-charger-10000mah-power-bank"}}},
+ video:{tag:"PAGE",
+  w:"Video's edge was +21.6 points a decade ago; it's +5.4 now. Table stakes, not a differentiator — make one cheaply, then put the remaining hours into your pre-launch list.",
+  s:["First 30 seconds: the thing, working. (Software: screen-capture the real build doing its job.)",
+     "Structure: what it is → it working → why you can ship it → the ask. Under two minutes.",
+     "Phone camera, daylight, a $20 clip-on mic — bad audio kills more videos than bad picture.",
+     "Show the rough prototype and say it's rough. One day shooting, one day cutting, then stop."],
+  a:"Film one 60-second take of the product working and you saying what it is.",
+  p:{g:{n:"Hydrosense — AI sweat sensor",d:"Has a demo video → funded 219% with 75 backers (2025).",u:"https://www.kickstarter.com/projects/hydrosense-sweat-patch-optimize-hydration-and-performance"},
+     b:{n:"LaceClips",d:"No video → 31% funded from 200 backers — real interest, unfinished proof.",u:"https://www.kickstarter.com/projects/laceclips"}}},
+ time:{tag:"JUDG",
+  w:"Most hardware ships late — the delivery-rate research puts it at 75–84% — and a missed date is a broken promise to every backer, in public. Nobody cancels over a conservative estimate; comment sections burn over optimistic ones.",
+  s:["Chain the real timeline: funds arrive ~2 weeks after close → part lead times → production → freight → fulfillment.",
+     "Add 50%. Not 10% — every step has a failure mode you haven't met yet.",
+     "Say a month and season, never a day: “March 2027,” not “March 3rd.”",
+     "Digital-only rewards carry less risk — any physical tier gets the full padding rule."],
+  a:"Chain out your timeline step by step, add 50%, and put that month on the page."},
+ risk:{tag:"JUDG",
+  w:"Mandatory since 2012 — and “we're confident we can deliver” reads as either not knowing the risks or not saying. Naming specific risks signals you see the road.",
+  s:["List the three most plausible ways your project slips — real ones, not generic ones.",
+     "For each: the risk in one sentence, what you've already done about it, and the honest cost if it lands.",
+     "“First-run tooling commonly needs revision — we padded eight weeks” beats “manufacturing is hard.”",
+     "The test: could a stranger read it and know what to worry about with your project specifically?"],
+  a:"Write your three real risks with mitigation and cost — one short paragraph each."},
+ simple:{tag:"JUDG",
+  w:"Choice overload measurably lowers pledges — and every tier you add now is a fulfillment lane you run alone later, multiplied across colors and sizes.",
+  s:["Three to five tiers: a small thank-you, the product (your hero tier), maybe an early-bird, maybe a multi-pack.",
+     "No variant matrices at pledge time — collect colors and sizes in the post-campaign survey.",
+     "Price the hero tier from the padded BOM: unit cost + postage + fees, then margin.",
+     "Digital-extra padding clutters the decision without moving it. The product is the reward."],
+  a:"Cut to five tiers or fewer and check the hero tier clears its padded per-unit cost."},
+ net:{tag:"JUDG",
+  w:"Untested ideas meet their first real audience at the worst possible moment: launch day, in public, with the clock running. Real feedback plus committed early backers is the day-one-momentum pattern.",
+  s:["Show the prototype to strangers, not friends — kindness is bad data.",
+     "Ask what hurts: “what would stop you buying this?” and “what should it cost?” — never “do you like it?”",
+     "The only signal that matters is an unprompted “when can I get one?” — get those people onto your list immediately.",
+     "A flinch found now is a launch-day disaster prevented. Fix it, show them again — twice through that loop is a tested idea."],
+  a:"Put the prototype in front of ten strangers and write down every “what would stop you” answer."}};
+const JUDG_NOTE="Worked examples for this factor need a human reading real pages — the hand-researched stories in this report (Pebble, Coolest Cooler, Ring, MESHLE) carry it for now, and real creator interviews will add more.";
+let fixDone={}; // checkbox state — lives only while this page is open; nothing stored, nothing sent
 // ---------- matched real campaigns from the embedded database ----------
 let matchOffset=0;
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -685,7 +810,16 @@ function buildReport(scroll){
     else cls=(state.goal<=5000?"var(--good)":band(state.goal,GOALPTS)>=8?"var(--warn)":"var(--bad)");
     return '<div class="whyrow"><div class="wd" style="background:'+cls+'">'+(good?good[1]:band(state.goal,GOALPTS))+'</div><div><b>'+w[0]+'</b><br><span style="color:var(--ts)">'+w[1]+'</span></div></div>';}).join("");
   // full fixes
-  const fixHtml=sortedMiss.length?sortedMiss.map(m=>'<div class="fixfull"><div class="fp">+'+m[0]+' pts</div><div><b>'+m[2].replace(/\?.*/,"").replace(/\(.*/,"").trim()+'</b><br><span style="color:var(--ts)">'+(m[1]||"Push this to the top tier.")+'</span></div></div>').join(""):'<p>Nothing left on the list — your prep is as strong as this checklist can measure. The remaining work is execution.</p>';
+  const fixHtml=sortedMiss.length?('<p style="color:var(--ts);font-size:12.5px">Each fix opens into the how, a real campaign that did it well next to one that didn\'t, and one next action. Checkboxes live only on this page — nothing is stored or sent; print the report to keep them.</p>'+sortedMiss.map((m,ix)=>{
+    const fid=m[3]||"",g=GUIDES[fid];
+    const head='<div class="fp">+'+m[0]+' pts</div><div><b>'+m[2].replace(/\?.*/,"").replace(/\(.*/,"").trim()+'</b><br><span style="color:var(--ts)">'+(m[1]||"Push this to the top tier.")+'</span></div>';
+    if(!g)return '<div class="fixfull">'+head+'</div>';
+    const steps='<ol class="gsteps">'+g.s.map(x=>'<li>'+x+'</li>').join("")+'</ol>';
+    const pair=g.p?('<div class="gpair"><div class="case win"><span class="badge">DID IT WELL</span><div class="cn">'+g.p.g.n+'</div><div class="ct2">'+g.p.g.d+'</div><a class="gcaselink" href="'+g.p.g.u+'" target="_blank" rel="noopener">See the real page &rarr;</a></div><div class="case lose"><span class="badge">THE WARNING</span><div class="cn">'+g.p.b.n+'</div><div class="ct2">'+g.p.b.d+'</div><a class="gcaselink" href="'+g.p.b.u+'" target="_blank" rel="noopener">See the real page &rarr;</a></div></div>'):('<p class="gnote">'+JUDG_NOTE+'</p>');
+    const tag=g.tag==="PAGE"?'<span class="evtag">Examples: every number checkable on the linked pages.</span>':g.tag==="DATA"?'<span class="evtag">Examples: the highlighted attribute is recorded in the June 2026 dataset — it isn\'t visible on the public page, so you can\'t click-verify that part. Said plainly on purpose.</span>':'<span class="evtag">Judgement factor — guidance plus hand-researched case studies, labelled as such.</span>';
+    const chk='<label class="gact"><input type="checkbox" '+(fixDone[fid]?'checked':'')+' onchange="fixDone[\''+fid+'\']=this.checked"><span><b>Do this next:</b> '+g.a+'</span></label>';
+    return '<details class="fixcard"'+(ix<2?' open':'')+'><summary>'+head+'</summary><div class="gbody"><p class="gwhy">'+g.w+'</p>'+steps+pair+tag+chk+'</div></details>';
+  }).join("")):'<p>Nothing left on the list — your prep is as strong as this checklist can measure. The remaining work is execution.</p>';
   const maxCmp=Math.max(70,Math.ceil(Math.max(odds,catRate)+8));
 
   const standHtml=
@@ -744,7 +878,7 @@ document.getElementById("genrep").onclick=()=>buildReport(true);
 render();
 
 // ---------- tab routing (pure JS — works in sandboxed previews, local files, and GitHub Pages) ----------
-const TABS=["home","score","faq","data"];
+const TABS=["home","score","creators","faq","data"];
 function showTab(t){
   if(!TABS.includes(t))t="home";
   TABS.forEach(x=>{
