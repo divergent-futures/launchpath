@@ -60,6 +60,9 @@ background:linear-gradient(135deg,rgba(42,120,214,.10),rgba(42,120,214,.04));bor
 .fixes h3{font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .fix{display:grid;grid-template-columns:20px 1fr;gap:8px;margin:9px 0;font-size:12.5px}
 .fix .pt{font-weight:700;color:var(--accent)} .fix .ft b{display:block} .fix .ft span{color:var(--ts)}
+.pblink{display:block;margin:10px 0 0;padding:9px 12px;border-left:3px solid var(--accent);background:rgba(0,0,0,.03);border-radius:0 6px 6px 0;font-size:12.5px;color:var(--ts);text-decoration:none}
+.pblink:hover{background:rgba(0,0,0,.06)} .pblink b{color:var(--accent)}
+.pblink span{color:var(--accent);font-weight:600;white-space:nowrap}
 .break{margin-top:2px}
 .brow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--grid);font-size:13px}
 .brow:last-child{border-bottom:none}
@@ -821,6 +824,7 @@ function buildReport(scroll){
     if(good){const r=+good[1]/+good[2];cls=r>=.9?"var(--good)":r>=.5?"var(--warn)":"var(--bad)";}
     else cls=(state.goal<=5000?"var(--good)":band(state.goal,GOALPTS)>=8?"var(--warn)":"var(--bad)");
     return '<div class="whyrow"><div class="wd" style="background:'+cls+'">'+(good?good[1]:band(state.goal,GOALPTS))+'</div><div><b>'+w[0]+'</b><br><span style="color:var(--ts)">'+w[1]+'</span></div></div>';}).join("");
+  const PB={goal:"Prebuild costs your run at 1/10/50/250/1000 and shows which goal band each lands in.",mfg:"Prebuild builds the BOM, flags which lines are still estimates, and names the three worth quoting first.",proto:"Prebuild's v0 and v1 gates define what &#8220;working&#8221; has to mean before you film it.",net:"Prebuild's v1 gate is exactly this &#8212; does it work on a person, not just on a bench.",time:"Prebuild's v2 gate asks whether it can be made 250 times, which is what your delivery date depends on.",risk:"Prebuild's ruled-out register and check-first list are a risks section you can paste in."};
   // full fixes
   const fixHtml=sortedMiss.length?('<p style="color:var(--ts);font-size:12.5px">Each fix opens into the how, a real campaign that did it well next to one that didn\'t, and one next action. Checkboxes live only on this page — nothing is stored or sent; print the report to keep them.</p>'+sortedMiss.map((m,ix)=>{
     const fid=m[3]||"",g=GUIDES[fid];
@@ -830,7 +834,9 @@ function buildReport(scroll){
     const pair=g.p?('<div class="gpair"><div class="case win"><span class="badge">DID IT WELL</span><div class="cn">'+g.p.g.n+'</div><div class="ct2">'+g.p.g.d+'</div><a class="gcaselink" href="'+g.p.g.u+'" target="_blank" rel="noopener">See the real page &rarr;</a></div><div class="case lose"><span class="badge">THE WARNING</span><div class="cn">'+g.p.b.n+'</div><div class="ct2">'+g.p.b.d+'</div><a class="gcaselink" href="'+g.p.b.u+'" target="_blank" rel="noopener">See the real page &rarr;</a></div></div>'):('<p class="gnote">'+JUDG_NOTE+'</p>');
     const tag=g.tag==="PAGE"?'<span class="evtag">Examples: every number checkable on the linked pages.</span>':g.tag==="DATA"?'<span class="evtag">Examples: the highlighted attribute is recorded in the June 2026 dataset — it isn\'t visible on the public page, so you can\'t click-verify that part. Said plainly on purpose.</span>':'<span class="evtag">Judgement factor — guidance plus hand-researched case studies, labelled as such.</span>';
     const chk='<label class="gact"><input type="checkbox" '+(fixDone[fid]?'checked':'')+' onchange="fixDone[\''+fid+'\']=this.checked"><span><b>Do this next:</b> '+g.a+'</span></label>';
-    return '<details class="fixcard"'+(ix<2?' open':'')+'><summary>'+head+'</summary><div class="gbody"><p class="gwhy">'+g.w+'</p>'+steps+pair+tag+chk+'</div></details>';
+    const pb=PB[fid]?('<a class="pblink" href="https://divergentfutures.co/prebuild/" target="_blank" rel="noopener">'
+      +'<b>Prebuild</b> &#183; '+PB[fid]+' <span>Open it &#8594;</span></a>'):'';
+    return '<details class="fixcard"'+(ix<2?' open':'')+'><summary>'+head+'</summary><div class="gbody"><p class="gwhy">'+g.w+'</p>'+steps+pair+tag+chk+pb+'</div></details>';
   }).join("")):'<p>Nothing left on the list — your prep is as strong as this checklist can measure. The remaining work is execution.</p>';
   const maxCmp=Math.max(70,Math.ceil(Math.max(odds,catRate)+8));
 
