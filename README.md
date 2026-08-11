@@ -2,18 +2,18 @@
 
 **A free, private, open toolkit that tells first-time creators the truth about crowdfunding** — their real odds, the moves that actually change them, and real campaigns like theirs — built from **590,000 real Kickstarter projects**.
 
-**▶ Use it: [divergentfutures.co/launchpath](https://divergentfutures.co/launchpath/)** · **[Download it](https://divergentfutures.co/launchpath/launchpath.html)** *(one file, works offline, forever)*
+**▶ Use it: [divergentfutures.co/launchpath](https://divergentfutures.co/launchpath/)**
 
-A [Divergent Futures](https://divergentfutures.co) project. Working title — name may change.
+A [Divergent Futures](https://divergentfutures.co) project — [more about Launchpath](https://divergentfutures.co/projects/launchpath/).
 
 ---
 
 ## What it does
 
 1. **Learn your real odds.** Not "Technology: hard." Your actual subcategory: DIY electronics funds at ~52%, apps at ~7%. Plus how big and crowded your corner is, so you know before committing a year to the wrong shape.
-2. **Score your readiness.** Eleven plain questions against the factors that move funding. Five of them — goal size, preparation time, campaign duration, video, pre-launch audience — carry weights **fitted against 57,982 recent campaigns** (2023+, subcategory-controlled). The other six — prototype, manufacturing costing, delivery padding, risks honesty, reward simplicity, idea-testing — are judgement, and the tool labels which is which instead of passing opinion off as measurement. No sugarcoating: if you're not ready yet, it'll say so — and if you are, it'll say that too.
-3. **See real campaigns like yours.** A full written report compares you to the field and shows real matched campaigns — funded, near-miss, and failed — each linked to its real Kickstarter page.
-4. **Fix the gaps, then launch** — owning 100% of what you made. Every weak answer comes back as a ranked fix list: what to change, in what order, and how many points each fix is worth.
+2. **Score your readiness.** Eleven plain questions across the eleven factors that separate prepared campaigns from unprepared ones — goal size, preparation time, campaign duration, pre-launch audience, working prototype, real manufacturing costing, demo video, idea-testing, delivery-date realism, reward structure, and an honest risks section. You get a score out of 100, a verdict band, and a ranked list of what to fix first.
+3. **See real campaigns like yours.** A full written report compares you to the field and shows real matched campaigns — one that made it, one that came heartbreakingly close, one that didn't — each linked to its real Kickstarter page. Every weak factor also opens onto a matched pair: a campaign that did that specific thing well, next to one that didn't.
+4. **Fix the gaps, then launch** — owning 100% of what you made.
 
 ## The privacy model (the whole point)
 
@@ -25,15 +25,34 @@ Why so strict? Because the target users are young creators typing their one good
 
 ## The data & method (honest version)
 
-- **Baseline:** 378,662 Kickstarter projects (2009–2017, the public research dataset) — used for absolute success-rate benchmarks (category/subcategory rates, the goal-size gradient).
+- **Baseline:** 378,662 Kickstarter projects (2009–2017, the public research dataset) — a **complete census** of that period, and therefore the only source used for absolute success-rate benchmarks (category/subcategory rates, the goal-size gradient).
 - **Current snapshot:** 210,806 projects (public Web Robots crawl through June 2026) — used for current volumes, subcategory sizes/shares, and the example database. *Known bias, handled:* monthly crawls over-sample successful projects, so we never quote recent absolute rates — only rankings, shares, and volumes, where the bias can't mislead.
+- **The absolute-versus-relative rule** is the single most important methodological commitment in this project. Any absolute rate you see comes from the complete 2009–2017 census. Anything derived from the 2026 crawl is expressed as a comparison. The two are never mixed, and the combined "590,000" figure describes scale — it is never the denominator of a quoted rate.
 - **The 5,000-campaign example database:** a stratified sample — 2,500 funded across the winning range, 1,500 near-misses (50–99%; deliberately over-sampled because they teach the most), 1,000 clear failures — across all 15 categories and 160 subcategories, 84% launched 2024–2026, extra density in Technology/Design/Games. Quality rules: Kickstarter's own `percent_funded` figure used verbatim; canceled campaigns ≥50% excluded (a creator pulling the plug isn't a market verdict); every record links to its live public page.
-- **Scoring weights:** the five measurable factors are fitted by logistic regression with subcategory fixed effects on 57,982 campaigns launched 2023+ (89 subcategories, n≥150 each). The six judgement factors keep weights grounded in published research and platform rules — Kickstarter's creator rules (working-prototype requirement, Risks & Challenges), Mollick's *Delivery Rates on Kickstarter* (SSRN), UCLA DataRes' 378k-campaign analysis, DTU Science Park hardware post-mortems — and are labelled `judgement` in the report so you always know which kind of claim you're reading.
-- **Estimates are estimates.** The odds figure guides decisions; it doesn't promise outcomes, and the tool says so wherever it appears.
+
+## How sure we are of the score, factor by factor
+
+This is the part most tools hide, so it gets its own section.
+
+- **Five of the eleven factors are `measured`** — their weights are fitted on **57,982 campaigns from 2023 onward** (a filtered subset of the current snapshot, 89 subcategories, with subcategory fixed effects).
+- **The other six are `judgement`.** They describe things that do not exist as fields in any public dataset and never will — whether a prototype actually works, whether the manufacturing was really costed. Those weights are reasoned, argued for, and open to challenge. They are not fitted, and we don't pretend otherwise.
+- **Every row of the score breakdown is labelled `measured` or `judgement`**, so the split is visible at a glance instead of hidden behind one confident number. Overall the model is roughly **45% fitted and 55% reasoned**.
+- The judgement weights draw on Kickstarter's own video statistics (54% funded with video vs 39% without) and creator rules (working-prototype requirement, Risks & Challenges), Mollick's *Delivery Rates on Kickstarter* (SSRN), UCLA DataRes' 378k-campaign analysis, DTU Science Park hardware post-mortems, and large-scale campaign studies.
+- **The conversion from log-odds into points is a ranking, not a precise measurement**, and the 85 / 70 / 45 verdict cut-offs are communication devices rather than findings.
+- **Known modelling choice, stated plainly:** goal size counts twice — once inside the readiness score, and again as the base rate the odds are built from. There is a written defence for this. It has not yet been externally attacked, so don't treat it as settled.
+
+## What it isn't
+
+- **Not a predictor.** The odds figure is a historical base rate adjusted for two things we can observe — what you're asking for, and what you're asking it in. It tells you what happened to campaigns that looked like yours. It does not tell you what will happen to yours.
+- **Not a gatekeeper.** It will never tell you not to launch. That call is yours; the tool's job is to make sure you make it with the real numbers in front of you.
+- **Not validated by real users yet.** The model has been through adversarial review, but no first-time creator has yet used this in a recorded think-aloud. Treat it as carefully built, not as proven.
+- **Not affiliated with Kickstarter**, and not a business. Nothing is sold, upsold, or gated.
 
 ## Who it's for
 
 Student makers and first-time hardware creators — and the clubs, school programs, and youth-entrepreneur communities that support them. It runs anywhere a browser runs, needs no accounts or setup, and is free.
+
+Note for creators under 18: Kickstarter requires project creators to be 18 or over. Minors can work on a project, but the account needs an adult creator with government-issued ID and a bank account in their name — or a fiscal sponsor holding the legal entity on the team's behalf. The tool says this up front rather than burying it.
 
 ## Independence
 
@@ -42,6 +61,8 @@ Not affiliated with, or endorsed by, Kickstarter. All statistics derive from pub
 ## Contributing / feedback
 
 Issues and PRs welcome — especially from people who have actually run campaigns. If a number looks wrong, say so; the receipts-not-hype rule means we'd rather fix it than defend it.
+
+Contact: [space.divergentfutures@gmail.com](mailto:space.divergentfutures@gmail.com)
 
 ## License
 

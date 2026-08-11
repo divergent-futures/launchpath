@@ -213,7 +213,7 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
 <div class="card"><h2>How it works</h2>
 <div class="journey">
   <div class="jstep"><div class="jnum">1</div><div><h3>Learn your real odds</h3><p>Not "Technology: hard." Your actual subcategory: DIY electronics funds at ~52%; apps at ~7%. Big crowded space or quiet corner &#8212; you'll know before you commit a year to the wrong shape.</p></div></div>
-  <div class="jstep"><div class="jnum">2</div><div><h3>Score your readiness</h3><p>Ten plain questions against the seven levers the data says actually move funding &#8212; goal size, prototype, pre-launch audience, manufacturing costing, and more. No sugarcoating: it will tell you not to launch yet.</p></div></div>
+  <div class="jstep"><div class="jnum">2</div><div><h3>Score your readiness</h3><p>Eleven plain questions across the eleven factors that separate prepared campaigns from unprepared ones &#8212; goal size, preparation time, campaign duration, pre-launch audience, prototype, manufacturing costing, and more. No sugarcoating: you get a ranked list of what to fix, weakest first.</p></div></div>
   <div class="jstep"><div class="jnum">3</div><div><h3>See real campaigns like yours</h3><p>A full written report compares you to the field and shows real matched campaigns &#8212; one that made it, one that came heartbreakingly close, one that didn't &#8212; from a database of 5,000 recent projects, each linked to its real page.</p></div></div>
   <div class="jstep"><div class="jnum">4</div><div><h3>Fix the gaps, then launch</h3><p>A ranked fix list turns your weak points into a to-do list. Work it, re-score, and launch when the data changes its mind &#8212; owning 100% of what you made.</p></div></div>
 </div></div>
@@ -295,9 +295,9 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
 
 <details class="faq"><summary>Why should I trust the examples?</summary><div class="fa">Because you can check every one. All matched campaigns are real projects with public numbers, and every card links to the actual Kickstarter page. No composites, no invented stories, no cherry-picking only winners — the database deliberately includes 1,500 near-misses and 1,000 failures, because the "almost" stories teach more than the hits.</div></details>
 
-<details class="faq"><summary>The score told me not to launch. Now what?</summary><div class="fa">That's the tool working, not failing — it just saved you your one first impression. Every point you're missing maps to a concrete fix in your report: build the prototype, collect reservations, get a real manufacturing quote, cut the goal. Work the list, re-score, and launch when the report changes its mind. The gap between an 11 and an 85 is usually weeks of focused work, not luck.</div></details>
+<details class="faq"><summary>My score came back low. Now what?</summary><div class="fa">That's the tool working, not failing — it just saved you your one first impression. Every point you're missing maps to a concrete fix in your report: build the prototype, collect reservations, get a real manufacturing quote, cut the goal. Work the list, re-score, and launch when the report changes its mind. The gap between an 11 and an 85 is usually weeks of focused work, not luck.</div></details>
 
-<details class="faq"><summary>What does the score actually measure?</summary><div class="fa">Preparation — specifically the seven factors with the strongest evidence behind them: goal size (weighted heaviest), pre-launch audience, real manufacturing costing, working prototype, demo video, idea-testing with real people, delivery-date realism, campaign simplicity, and an honest risks section. It does not measure how good your idea is — no questionnaire can. It measures whether you've done the things that let a good idea win.</div></details>
+<details class="faq"><summary>What does the score actually measure?</summary><div class="fa">Preparation — specifically the eleven factors it scores: goal size (weighted heaviest), preparation time, campaign duration, pre-launch audience, real manufacturing costing, working prototype, demo video, idea-testing with real people, delivery-date realism, campaign simplicity, and an honest risks section. Five of the eleven are measured &#8212; their weights fitted from recent campaign data &#8212; and six are judgement. Every row of your breakdown is labelled, so you can always see which is which. It does not measure how good your idea is — no questionnaire can. It measures whether you've done the things that let a good idea win.</div></details>
 </div>
 
 <!-- ================= DATA & METHOD ================= -->
@@ -320,7 +320,7 @@ details.faq .fa{padding:0 18px 15px 18px;font-size:13.5px;color:var(--ts)}
 <p><b>6. Newer subcategories don't get invented numbers.</b> Where a subcategory lacks enough history for a reliable rate (e.g. TTRPG, STL files, Toys), the tool says so and falls back to the category average, flagged in your report.</p></div>
 
 <div class="card datalist"><h2>Known limits</h2>
-<p>Bulk campaign data can't see everything. It doesn't know whether funded projects actually <i>delivered</i> (published research suggests ~9% of funded projects never do — our report warns about this, and deeper per-campaign research is ongoing). It can't measure idea quality, execution skill, or luck. And historical rates describe the past — categories shift, platforms change rules, and your campaign is not an average. Use the numbers the way a good pilot uses a weather report.</p></div>
+<p>Bulk campaign data can't see everything. It doesn't know whether funded projects actually <i>delivered</i> (published research suggests ~9% of funded projects never do — our report warns about this, and deeper per-campaign research is ongoing). It can't measure idea quality, execution skill, or luck. And historical rates describe the past — categories shift, platforms change rules, and your campaign is not an average. Use the numbers the way a good pilot uses a weather report.<br><br>Free and open source (MIT) &#8212; <a href="https://github.com/divergent-futures/launchpath" target="_blank" rel="noopener">read the code on GitHub</a>. Zero network requests: nothing you type leaves this device.</p></div>
 </div>
 </div>
 
@@ -498,8 +498,8 @@ function render(){
   if(answered<3){vd="—";vs="Keep filling it in…";}
   else if(pct>=85){vd="Launch-ready 🚀";vs="Strong across the board. Tighten the last items and go.";}
   else if(pct>=70){vd="Nearly there";vs="Solid. Close the gaps below before you publish.";}
-  else if(pct>=45){vd="Getting there";vs="Real potential — but fix the big items first, don't launch yet.";}
-  else{vd="Not ready yet";vs="Don't launch on this. The good news: the fixes below are all doable.";}
+  else if(pct>=45){vd="Getting there";vs="Real potential — the big items are still unfixed, and those are the ones that move the number most.";}
+  else{vd="Not ready yet";vs="This isn't ready yet. The good news: the fixes below are all doable.";}
   document.getElementById("verdict").textContent=vd;document.getElementById("vsub").textContent=vs;
   // odds estimate
   const oddsV=document.getElementById("oddsV"),oddsC=document.getElementById("oddsC");
@@ -873,7 +873,7 @@ function buildReport(scroll){
   '<div class="repsec"><h3>The honest bottom line</h3><p>'+
   (pct>=85?"You've done the preparation most first-timers skip. Launch when the last fixes are done — and remember Pebble: funded is the starting line.":
    pct>=70?"You're close. Do the fix list before you launch, not after — the difference between 82% funded and 110% funded is everything.":
-   pct>=45?"Don't launch yet — and that's good news, because every point you're missing is a fix you control. Work the list, then re-score.":
+   pct>=45?"You're not there yet — and that's good news, because every point you're missing is a fix you control. Work the list, then re-score.":
    "If you launched today, the data says it very likely wouldn't fund — and you'd burn your one first impression. Work the list top to bottom, re-score, and launch when this report changes its mind. And if you've already had a campaign miss: that isn't the end either. Safender's Paladin Pro hit 86% and kept $0 — then came back right-sized and raised $66,340, more than the first try ever collected. The list above is that comeback, done before the first attempt instead of after.")+
   '</p><p style="color:var(--ts);font-size:12px">Estimates come from historical Kickstarter data (2009–2017 baseline, 378,662 projects; cross-checked against 2022–2025). They guide decisions; they don\'t promise outcomes.</p></div></div>';
 
